@@ -17,7 +17,7 @@ from module import FashionMNISTModule
 def main(args):
 
     seed_everything(0)
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
+    # os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
 
     if args.logger == "wandb":
         logger = WandbLogger(name=args.classifier, project="mnist")
@@ -38,7 +38,7 @@ def main(args):
     trainer = Trainer(
         fast_dev_run=bool(args.dev),
         logger=logger if not bool(args.dev + args.test_phase) else None,
-        gpus=args.gpu_id,
+        gpus=args.gpus,
         deterministic=True,
         weights_summary=None,
         log_every_n_steps=1,
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--max_epochs", type=int, default=50)
     parser.add_argument("--num_workers", type=int, default=2)
-    parser.add_argument("--gpu_id", type=str, default="0")
+    parser.add_argument("--gpus", type=str, default="0")
 
     parser.add_argument("--learning_rate", type=float, default=5e-3)
     parser.add_argument("--weight_decay", type=float, default=1e-2)
