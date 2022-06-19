@@ -43,7 +43,7 @@ def main(args):
         weights_summary=None,
         log_every_n_steps=1,
         max_epochs=args.max_epochs,
-        checkpoint_callback=checkpoint,
+        callbacks=checkpoint,
         precision=args.precision,
         enable_progress_bar=True,
     )
@@ -51,9 +51,9 @@ def main(args):
     model = FashionMNISTModule(args)
     data = FashionMNISTData(args)
     trainloader = data.train_dataloader()
-    # data.save_train_data(trainloader, args.filepath)
+    data.save_train_data(trainloader, args.filepath)
     testloader = data.test_dataloader()
-    # data.save_test_data(testloader, args.filepath)
+    data.save_test_data(testloader, args.filepath)
 
 
     # if bool(args.pretrained):
@@ -66,7 +66,7 @@ def main(args):
         trainer.test(model, data.test_dataloader())
     else:
         trainer.fit(model, data)
-        trainer.test()
+        trainer.test(model, data.test_dataloader())
 
 
 if __name__ == "__main__":
