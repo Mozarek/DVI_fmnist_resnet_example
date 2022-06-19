@@ -14,7 +14,7 @@ import torch
 class FashionMNISTData(pl.LightningDataModule):
     def __init__(self, args):
         super().__init__()
-        self.hparams = args
+        self.save_hyperparameters(args)
 
     def train_dataloader(self):
         transform = ToTensor()
@@ -56,7 +56,7 @@ class FashionMNISTData(pl.LightningDataModule):
 
         training_path = os.path.join(path, "Training_data")
         if not os.path.exists(training_path):
-            os.mkdir(training_path)
+            os.makedirs(training_path)
         torch.save(trainset_data, os.path.join(training_path, "training_dataset_data.pth"))
         torch.save(trainset_label, os.path.join(training_path, "training_dataset_label.pth"))
 

@@ -80,7 +80,7 @@ class MobileNetV2(nn.Module):
         self.last_channel = int(last_channel * max(1.0, width_mult))
 
         # CIFAR10: stride 2 -> 1
-        features = [ConvBNReLU(3, input_channel, stride=1)]
+        features = [ConvBNReLU(1, input_channel, stride=1)]
         # END
 
         # building inverted residual blocks

@@ -25,11 +25,12 @@ def main(args):
         logger = TensorBoardLogger("mnist", name=args.classifier)
 
     checkpoint = ModelCheckpoint(
-        filepath=os.path.join(args.filepath, args.classifier, "{epoch:03d}"),
+        dirpath=os.path.join(args.filepath, args.classifier),
+        filename="{epoch:03d}",
         monitor="acc/val",
-        mode="max",
+        # mode="max",
         # save_last=False,
-        period=args.period,
+        every_n_epochs=args.period,
         save_top_k=args.save_top_k,
         save_weights_only=True,
     )
@@ -44,15 +45,15 @@ def main(args):
         max_epochs=args.max_epochs,
         checkpoint_callback=checkpoint,
         precision=args.precision,
-
+        enable_progress_bar=True,
     )
 
     model = FashionMNISTModule(args)
     data = FashionMNISTData(args)
     trainloader = data.train_dataloader()
-    data.save_train_data(trainloader, args.filepath)
+    # data.save_train_data(trainloader, args.filepath)
     testloader = data.test_dataloader()
-    data.save_test_data(testloader, args.filepath)
+    # data.save_test_data(testloader, args.filepath)
 
 
     # if bool(args.pretrained):
@@ -81,11 +82,11 @@ if __name__ == "__main__":
     )
 
     # TRAINER args
-    parser.add_argument("--classifier", type=str, default="resnet18")
+    parser.add_argument("--classifier", type=str, default="mobilenet_v2")
     # parser.add_argument("--pretrained", type=int, default=0, choices=[0, 1])
 
     parser.add_argument("--precision", type=int, default=32, choices=[16, 32])
-    parser.add_argument("--batch_size", type=int, default=250)
+    parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--max_epochs", type=int, default=50)
     parser.add_argument("--num_workers", type=int, default=2)
     parser.add_argument("--gpu_id", type=str, default="0")
@@ -94,8 +95,8 @@ if __name__ == "__main__":
     parser.add_argument("--weight_decay", type=float, default=1e-2)
 
     parser.add_argument("--filepath", type=str, default="models")
-    parser.add_argument("--period", type=int, default=10)
-    parser.add_argument("--save_top_k", type=int, default=1)
+    parser.add_argument("--period", type=int, default=1)
+    parser.add_argument("--save_top_k", type=int, default=-1)
 
     args = parser.parse_args()
     main(args)

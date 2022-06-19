@@ -1,6 +1,6 @@
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning.metrics import Accuracy
+from torchmetrics import Accuracy
 
 from cifar10_models.densenet import densenet121, densenet161, densenet169
 from cifar10_models.googlenet import googlenet
@@ -10,7 +10,7 @@ from cifar10_models.resnet import resnet18, resnet34, resnet50
 from cifar10_models.vgg import vgg11_bn, vgg13_bn, vgg16_bn, vgg19_bn
 from schduler import WarmupCosineLR
 from torch import nn
-from pytorch_lightning.core.decorators import auto_move_data
+# from pytorch_lightning.core.decorators import auto_move_data
 
 all_classifiers = {
     "vgg11_bn": vgg11_bn(),
@@ -32,12 +32,12 @@ all_classifiers = {
 class FashionMNISTModule(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams = hparams
+        self.save_hyperparameters(hparams)
 
         self.criterion = torch.nn.CrossEntropyLoss()
         self.accuracy = Accuracy()
         self.model = all_classifiers[self.hparams.classifier]
-        self.model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        # self.model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 
     def forward(self, batch):
         images, labels = batch
@@ -73,7 +73,7 @@ class FashionMNISTModule(pl.LightningModule):
             momentum=0.9,
             nesterov=True,
         )
-        total_steps = self.hparams.max_epochs * len(self.train_dataloader())
+        total_steps = self.hparams.max_epochs * len(self.trainer._data_connector._train_dataloader_source.dataloader())
         scheduler = {
             "scheduler": WarmupCosineLR(
                 optimizer, warmup_epochs=total_steps * 0.3, max_epochs=total_steps
